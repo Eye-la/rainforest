@@ -1,2 +1,16 @@
-<h1>Products#index</h1>
-<p>Find me in app/views/products/index.html.erb</p>
+<h1>List products</h1>
+
+<%= link_to 'New Product', new_product_path %>
+
+<h1><small><%= page_entries_info @products %></small></h1>
+
+<%= form_tag products_path, method: :get, authentication: false, id: 'search-form' do %>
+  <%= text_field_tag :search, params[:search] %>
+  <%= submit_tag "Search" %>
+<% end %>
+
+<div id="products">
+  <%= render @products %>
+</div>
+
+<%= paginate @products %>

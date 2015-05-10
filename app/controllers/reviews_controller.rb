@@ -1,4 +1,5 @@
 class ReviewsController < ApplicationController
+  before_filter :load_product
   before_filter :ensure_logged_in, only: [:create, :destroy]
 
   def show
@@ -6,13 +7,17 @@ class ReviewsController < ApplicationController
   end
 
   def create
-    @review = Review.new(review_params)
+    @review = @product.reviews.build(review_params)
     @review.user = current_user
 
-    if @review.save
-      redirect_to products_path, notice: "Review created successfully"
-    else
-      render 'products/show'
+    respond_to do |format|
+      if @review.save
+        format.html {redirect_to product_path(@product.id), notice: 'Review added.'}
+        format.js {}
+      else
+        format.html {render 'products/show', alert: 'There was an error.'}
+        format.js {}
+      end
     end
   end
 
@@ -23,7 +28,7 @@ class ReviewsController < ApplicationController
 
   private
   def review_params
-    params.require(:review).permit(:comment, :product_id)
+    params.require(:review).permit(:commit, :product_id)
   end
 
   def load_product
